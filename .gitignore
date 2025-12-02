@@ -22,3 +22,5 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 advent_of_code_2025-*.tar
 
+# Downloaded individual tasks. See the specific day scripts for the specific file names.
+/data/
