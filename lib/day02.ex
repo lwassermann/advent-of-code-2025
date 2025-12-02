@@ -1,12 +1,12 @@
 defmodule Day02 do
-  @example "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
-
   def run do
-    test_ids(@example, &valid?/1)
     test_ids(File.read!("data/day02-1.txt"), &valid?/1)
+    |> IO.puts()
+
     IO.puts("There are more suspicious patterns...")
-    test_ids(@example, &extended_valid?/1)
+
     test_ids(File.read!("data/day02-1.txt"), &extended_valid?/1)
+    |> IO.puts()
   end
 
   def test_ids(content, valid_fn) do
@@ -17,7 +17,6 @@ defmodule Day02 do
         acc -> acc + item
       end
     end)
-    |> IO.puts()
   end
 
   def parse_ranges(content) do
