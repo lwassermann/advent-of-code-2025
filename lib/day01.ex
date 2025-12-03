@@ -12,10 +12,10 @@ L82"
 
   def run do
     part1(@example)
-    part1(File.read!("data/day01-1.txt"))
+    part1(File.read!("data/day01.txt"))
     IO.puts("Switching to password method 0x434C49434B.")
     part2(@example)
-    part2(File.read!("data/day01-1.txt"))
+    part2(File.read!("data/day01.txt"))
   end
 
   def part1(content) do

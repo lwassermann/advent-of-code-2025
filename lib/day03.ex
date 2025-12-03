@@ -1,6 +1,6 @@
 defmodule Day03 do
   def run do
-    File.read!("data/day03-1.txt")
+    File.read!("data/day03.txt")
     |> switch_batteries()
     |> IO.puts()
 

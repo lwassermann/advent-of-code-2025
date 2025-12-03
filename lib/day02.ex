@@ -1,11 +1,11 @@
 defmodule Day02 do
   def run do
-    test_ids(File.read!("data/day02-1.txt"), &valid?/1)
+    test_ids(File.read!("data/day02.txt"), &valid?/1)
     |> IO.puts()
 
     IO.puts("There are more suspicious patterns...")
 
-    test_ids(File.read!("data/day02-1.txt"), &extended_valid?/1)
+    test_ids(File.read!("data/day02.txt"), &extended_valid?/1)
     |> IO.puts()
   end
 
