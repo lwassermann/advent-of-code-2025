@@ -1,55 +1,63 @@
 defmodule Day03 do
   def run do
     File.read!("data/day03.txt")
-    |> switch_batteries()
+    |> switch_batteries(2)
     |> IO.puts()
 
-    # IO.puts("There are more suspicious patterns...")
+    IO.puts("That was not enough to overcome the static friction. Again with more batteries...")
 
-    # test_ids(File.read!("data/day03-1.txt"), &extended_valid?/1)
-    # |> IO.puts()
+    File.read!("data/day03.txt")
+    |> switch_batteries(12)
+    |> IO.puts()
   end
 
-  def switch_batteries(content) do
+  def switch_batteries(content, bank_count) do
     content
     |> String.split("\n", trim: true)
     |> Enum.map(&parse_bank_joltages/1)
-    |> Enum.map(&maximize_joltage/1)
+    |> Enum.map(fn bank -> maximize_joltage(bank, bank_count) end)
     |> Enum.sum()
   end
 
-  def maximize_joltage(bank) when length(bank) >= 2 do
-    candidates =
-      for joltage <- bank, reduce: %{max: nil, trailing_max: nil, leading_max: nil} do
-        %{max: max, trailing_max: trailing_max} = acc ->
-          cond do
-            is_nil(max) or joltage > max ->
-              %{max: joltage, trailing_max: nil, leading_max: max}
+  def maximize_joltage(bank, bank_count) when length(bank) < bank_count do
+    raise ArgumentError
+  end
 
-            is_nil(trailing_max) or joltage > trailing_max ->
-              %{acc | trailing_max: joltage}
+  def maximize_joltage(bank, bank_count) when length(bank) == bank_count do
+    calculate_combined_joltage(bank)
+  end
 
-            true ->
-              acc
-          end
-      end
-
-    combine_joltage_candidates(candidates)
+  def maximize_joltage(bank, bank_count) when length(bank) > bank_count do
+    maximize_joltage(deselect_from(bank), bank_count)
   end
 
   def maximize_joltage(_), do: raise(ArgumentError)
 
-  defp combine_joltage_candidates(%{max: nil}), do: raise(ArgumentError)
+  def deselect_from(batteries) do
+    {_, discard_index} =
+      batteries
+      |> Enum.with_index()
+      |> Enum.reduce_while({List.first(batteries), 0}, fn {joltage, _} = battery,
+                                                          {discard_value, _} = discard ->
+        cond do
+          # The battery marked for discarding has a higher joltage than the current one.
+          discard_value > joltage ->
+            {:cont, battery}
 
-  defp combine_joltage_candidates(%{max: _, trailing_max: nil, leading_max: nil}),
-    do: raise(ArgumentError)
+          # The current battery has the same joltage. We can discard either.
+          discard_value == joltage ->
+            {:cont, discard}
 
-  # If the rightmost battery has the highest joltage
-  defp combine_joltage_candidates(%{max: digit2, trailing_max: nil, leading_max: digit1}) do
-    10 * digit1 + digit2
+          # The next battery has a higher joltage, which means it should move left.
+          discard_value < joltage ->
+            {:halt, discard}
+        end
+      end)
+
+    List.delete_at(batteries, discard_index)
   end
 
-  defp combine_joltage_candidates(%{max: digit1, trailing_max: digit2}), do: 10 * digit1 + digit2
+  defp calculate_combined_joltage(batteries), do: Enum.join(batteries) |> String.to_integer()
 
   def parse_bank_joltages(bank_desciption) do
     bank_desciption
