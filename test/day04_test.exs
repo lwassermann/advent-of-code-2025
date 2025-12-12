@@ -18,7 +18,7 @@ defmodule Day04Test do
     assert is_accessible?(grid, {1, 2}) == false
   end
 
-  test "power example input" do
+  test "accessibility example input" do
     grid =
       """
       ..@@.@@@@.

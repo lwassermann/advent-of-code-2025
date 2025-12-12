@@ -3,14 +3,14 @@ defmodule Day06Test do
 
   import Day06
 
-  test "power example input" do
+  test "math example input" do
     # This example needs trailing whitespaces
     example =
       """
       123 328  51 64 
        45 64  387 23 
         6 98  215 314
-      *   +   *   +
+      *   +   *   +  
       """
 
     assert example

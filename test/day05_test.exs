@@ -9,7 +9,7 @@ defmodule Day05Test do
     assert merge_overlapping_ranges([3..5, 10..14, 12..18, 16..20]) == [3..5, 10..20]
   end
 
-  test "power example input" do
+  test "ingredients example input" do
     example =
       """
       3-5
