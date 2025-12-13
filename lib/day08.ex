@@ -1,17 +1,25 @@
 defmodule Day08 do
   def run do
-    File.read!("data/day08.txt")
-    |> parse_lights()
-    |> connect_shortest(1000)
+    circuitry =
+      File.read!("data/day08.txt")
+      |> parse_lights()
+      |> connect_shortest(1000)
+
+    circuitry
     |> guestimate_size()
+    |> IO.inspect()
+
+    circuitry
+    |> last_connection_product()
     |> IO.inspect()
   end
 
   def parse_lights(content) do
     lights = initialize_lights(content)
     circuits = initialize_circuits(map_size(lights) - 1)
+    distances = calculate_distances(lights)
 
-    %{lights: lights, circuits: circuits}
+    %{lights: lights, circuits: circuits, distances: distances}
   end
 
   defp initialize_lights(content) do
@@ -60,9 +68,7 @@ defmodule Day08 do
   end
 
   def connect_shortest(circuitry, number) do
-    distances = calculate_distances(circuitry.lights)
-
-    connect(circuitry, number, distances)
+    connect(circuitry, number, circuitry.distances)
   end
 
   defp connect(circuitry, 0, _), do: circuitry
@@ -70,11 +76,18 @@ defmodule Day08 do
   defp connect(_circuitry, _number, []),
     do: raise("Could not run that many wires. All lights are connected.")
 
+  # All lights are connected in one big circuit
+  defp connect(circuitry, _number, _distances) when map_size(circuitry.circuits) == 1,
+    do: circuitry
+
   defp connect(circuitry, number, [{_, {from, to}} | rest]) do
     light_a = circuitry.lights[from]
     light_b = circuitry.lights[to]
 
-    connect(merge_circuits(circuitry, light_a.circuit_id, light_b.circuit_id), number - 1, rest)
+    circuitry
+    |> put_in([:last_connection], {light_a, light_b})
+    |> merge_circuits(light_a.circuit_id, light_b.circuit_id)
+    |> connect(number - 1, rest)
   end
 
   defp merge_circuits(circuitry, id_a, id_b) when id_a > id_b,
@@ -117,6 +130,12 @@ defmodule Day08 do
     |> Enum.sort(:desc)
     |> Enum.take(3)
     |> Enum.product()
+  end
+
+  def last_connection_product(circuitry) do
+    circuitry = connect_shortest(circuitry, length(circuitry.distances))
+    {a, b} = circuitry.last_connection
+    elem(a.position, 0) * elem(b.position, 0)
   end
 
   defp parse_coordinates(coordinate_description) do

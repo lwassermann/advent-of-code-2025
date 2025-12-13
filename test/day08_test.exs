@@ -40,6 +40,8 @@ defmodule Day08Test do
       425,690,689
       """
 
-    assert example |> parse_lights() |> connect_shortest(10) |> guestimate_size() == 40
+    circuitry = example |> parse_lights() |> connect_shortest(10)
+    assert circuitry |> guestimate_size() == 40
+    assert circuitry |> last_connection_product() == 25272
   end
 end
